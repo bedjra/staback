@@ -24,7 +24,6 @@ public enum PermissionType {
     FACTURE_GENERATE("Générer une facture"),
     VENTE_READ("Consulter les ventes"),
 
-    // === NOUVELLES PERMISSIONS ===
     // --- Gestion des Stocks ---
     INVENTAIRE_MANAGE("Gérer les inventaires (créer, valider)"),
     REAPPRO_MANAGE("Gérer les réapprovisionnements (transferts internes)"),
