@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -44,84 +46,100 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // ON A SUPPRIMÉ LE 'if (roleRepository.count() > 0) return;'
 
         // --- 1. Création des Rôles (si nécessaire) ---
 
-//                    //A-ADMIN
+        // A-ADMIN : Toutes les permissions
         Role adminRole = createRoleIfNotFound("ADMIN", Arrays.asList(PermissionType.values()));
 
-                 //B-SECRETAIRE
-        Role secretaireRole = createRoleIfNotFound("SECRETARIAT", List.of(
-                // --- Produits ---
-                PermissionType.PRODUIT_CREATE,
-                PermissionType.PRODUIT_READ,
-                PermissionType.PRODUIT_UPDATE,
-                PermissionType.PRODUIT_DELETE,
+        // B-SECRETAIRE : Permissions spécifiques
+        Role secretaireRole = createRoleIfNotFound("SECRETARIAT",
+                List.of(
+                        // --- Produits ---
+                        PermissionType.PRODUIT_READ,
 
-                // --- Commandes ---
-                PermissionType.COMMANDE_CREATE,
-                PermissionType.COMMANDE_READ,
-                PermissionType.COMMANDE_VALIDATE,
-                PermissionType.COMMANDE_CANCEL,
+                        // --- Commandes ---
+                        PermissionType.COMMANDE_CREATE,
+                        PermissionType.COMMANDE_READ,
+                        PermissionType.COMMANDE_VALIDATE,
+                        PermissionType.COMMANDE_CANCEL,
 
-                // --- Livraisons ---
-                PermissionType.LIVRAISON_GENERATE,
-                PermissionType.LIVRAISON_READ,
-                PermissionType.LIVRAISON_VALIDATE,
+                        // --- Livraisons ---
+                        PermissionType.LIVRAISON_GENERATE,
+                        PermissionType.LIVRAISON_READ,
+                        PermissionType.LIVRAISON_VALIDATE,
 
-                // --- Ventes & Factures ---
-                PermissionType.FACTURE_GENERATE,
-                PermissionType.VENTE_READ
-        ));
+                        // --- Ventes & Factures ---
+                        PermissionType.FACTURE_GENERATE,
+                        PermissionType.VENTE_READ
+                )
+        );
 
-            //C- MAGASINNIER
+        // C-MAGASINIER : Permissions pour la gestion des stocks
+        Role magasinierRole = createRoleIfNotFound("MAGASINIER",
+                List.of(
+                        // --- Produits ---
+                        PermissionType.PRODUIT_READ,
 
-        Role magasinierRole = createRoleIfNotFound("MAGASINIER", List.of(/* ... */));
+                        // --- Livraisons ---
+                        PermissionType.LIVRAISON_READ,
+                        PermissionType.LIVRAISON_VALIDATE
+                )
+        );
 
+        // D-BOUTIQUIER : Permissions pour les boutiques
+        Role boutiquierRole = createRoleIfNotFound("BOUTIQUIER",
+                List.of(
+                        // --- Gestion des Produits ---
+                        PermissionType.PRODUIT_READ,
 
-//              //D- BOUTIQUIER
-//        Role boutiquierRole = createRoleIfNotFound("BOUTIQUIER", List.of(
-//                // --- Gestion des Produits ---
-//                PermissionType.PRODUIT_CREATE,
-//                PermissionType.PRODUIT_READ,
-//
-//                // --- Gestion des Commandes ---
-//                PermissionType.COMMANDE_CREATE,
-//                PermissionType.COMMANDE_READ
-//        ));
+                        // --- Gestion des Commandes ---
+                        PermissionType.COMMANDE_CREATE,
+                        PermissionType.COMMANDE_READ,
 
-//            //E- CONTROLLEUR
-        Role controleurRole = createRoleIfNotFound("CONTROLEUR",  Arrays.asList(PermissionType.values()));
+                        // --- Ventes ---
+                        PermissionType.VENTE_READ
+                )
+        );
 
+        // E-CONTROLEUR : Toutes les permissions (comme admin)
+        Role controleurRole = createRoleIfNotFound("CONTROLEUR", Arrays.asList(PermissionType.values()));
 
         // --- 2. Création des Utilisateurs et Clients (si nécessaire) ---
         String defaultPassword = "123";
         createUserAndClient("admin@megatram.biz", defaultPassword, adminRole);
 //        createUserAndClient("secretaire@megatram.biz", defaultPassword, secretaireRole);
-//        createUserAndClient("mag@megatram.biz", defaultPassword, magasinierRole);
-//        createUserAndClient("mag2@megatram.com", defaultPassword, magasinierRole);
-//        createUserAndClient("boutiquier@megatram.com", defaultPassword, boutiquierRole);
-//        createUserAndClient("rahim@megatram.com", defaultPassword, controleurRole);
+//        createUserAndClient("magasinier@megatram.biz", defaultPassword, magasinierRole);
+//        createUserAndClient("boutiquier@megatram.biz", defaultPassword, boutiquierRole);
+//        createUserAndClient("controleur@megatram.biz", defaultPassword, controleurRole);
     }
 
     /**
-     * Méthode MISE À JOUR : Crée un rôle et ses permissions SEULEMENT s'il n'existe pas.
+     * Crée un rôle et ses permissions SEULEMENT s'il n'existe pas déjà.
      */
     private Role createRoleIfNotFound(String roleName, List<PermissionType> permissions) {
-        // On cherche d'abord si le rôle existe par son nom
         Optional<Role> roleOpt = roleRepository.findByNom(roleName);
 
-        // S'il est présent, on le retourne directement. On ne fait rien de plus.
         if (roleOpt.isPresent()) {
+            // Le rôle existe déjà, on le retourne sans modification
             return roleOpt.get();
+        } else {
+            // Créer un nouveau rôle avec toutes ses permissions
+            Role role = new Role();
+            role.setNom(roleName);
+            role = roleRepository.save(role);
+
+            // Ajouter toutes les permissions
+            addPermissionsToRole(role, permissions);
+
+            return role;
         }
+    }
 
-        // Si le rôle n'a pas été trouvé, on le crée.
-        Role role = new Role();
-        role.setNom(roleName);
-        role = roleRepository.save(role);
-
+    /**
+     * Ajoute toutes les permissions à un nouveau rôle.
+     */
+    private void addPermissionsToRole(Role role, List<PermissionType> permissions) {
         for (PermissionType permType : permissions) {
             Permission permission = new Permission();
             permission.setAction(permType.name());
@@ -129,28 +147,31 @@ public class DataInitializer implements CommandLineRunner {
             permission.setRole(role);
             permissionRepository.save(permission);
         }
-        return role;
     }
 
     /**
-     * Méthode privée pour créer un utilisateur ET un client associé s'ils n'existent pas.
+     * Crée un utilisateur ET un client associé s'ils n'existent pas.
      */
     private void createUserAndClient(String email, String password, Role role) {
-        // On vérifie l'utilisateur par son email
+        // Créer l'utilisateur s'il n'existe pas
         if (!utilisateurRepository.existsByEmail(email)) {
             Utilisateur user = new Utilisateur();
             user.setEmail(email);
             user.setPassword(passwordEncoder.encode(password));
             user.setRole(role);
             utilisateurRepository.save(user);
+
+            System.out.println("Utilisateur créé : " + email + " avec le rôle : " + role.getNom());
         }
 
-        // On vérifie le client par son nom (qui est l'email)
+        // Créer le client s'il n'existe pas
         if (!clientRepository.existsByNom(email)) {
             Client clientInterne = new Client();
             clientInterne.setNom(email);
             clientInterne.setTel("00000000");
             clientRepository.save(clientInterne);
+
+            System.out.println("Client créé : " + email);
         }
     }
 }
