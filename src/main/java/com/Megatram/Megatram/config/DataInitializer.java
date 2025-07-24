@@ -52,7 +52,26 @@ public class DataInitializer implements CommandLineRunner {
         // A-ADMIN : Toutes les permissions
         Role adminRole = createRoleIfNotFound("ADMIN", Arrays.asList(PermissionType.values()));
 
-        // B-SECRETAIRE : Permissions spécifiques
+
+        // B-BOUTIQUIER : Permissions pour les boutiques
+        Role boutiquierRole = createRoleIfNotFound("BOUTIQUIER",
+                List.of(
+                        // --- Gestion des Produits ---
+                        PermissionType.PRODUIT_READ,
+
+                        // --- Gestion des Commandes ---
+                        PermissionType.COMMANDE_CREATE,
+                        PermissionType.COMMANDE_READ,
+
+                        // --- Ventes ---
+                        PermissionType.VENTE_READ
+                )
+        );
+
+        // C-CONTROLEUR : Toutes les permissions (comme admin)
+        Role controleurRole = createRoleIfNotFound("CONTROLEUR", Arrays.asList(PermissionType.values()));
+
+        // D-SECRETAIRE : Permissions spécifiques
         Role secretaireRole = createRoleIfNotFound("SECRETARIAT",
                 List.of(
                         // --- Produits ---
@@ -75,7 +94,7 @@ public class DataInitializer implements CommandLineRunner {
                 )
         );
 
-        // C-MAGASINIER : Permissions pour la gestion des stocks
+        // E-MAGASINIER : Permissions pour la gestion des stocks
         Role magasinierRole = createRoleIfNotFound("MAGASINIER",
                 List.of(
                         // --- Produits ---
@@ -86,24 +105,6 @@ public class DataInitializer implements CommandLineRunner {
                         PermissionType.LIVRAISON_VALIDATE
                 )
         );
-
-        // D-BOUTIQUIER : Permissions pour les boutiques
-        Role boutiquierRole = createRoleIfNotFound("BOUTIQUIER",
-                List.of(
-                        // --- Gestion des Produits ---
-                        PermissionType.PRODUIT_READ,
-
-                        // --- Gestion des Commandes ---
-                        PermissionType.COMMANDE_CREATE,
-                        PermissionType.COMMANDE_READ,
-
-                        // --- Ventes ---
-                        PermissionType.VENTE_READ
-                )
-        );
-
-        // E-CONTROLEUR : Toutes les permissions (comme admin)
-        Role controleurRole = createRoleIfNotFound("CONTROLEUR", Arrays.asList(PermissionType.values()));
 
         // --- 2. Création des Utilisateurs et Clients (si nécessaire) ---
         String defaultPassword = "123";
