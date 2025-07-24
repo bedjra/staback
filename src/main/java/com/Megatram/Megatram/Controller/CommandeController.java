@@ -1,9 +1,6 @@
 package com.Megatram.Megatram.Controller;
 
 import com.Megatram.Megatram.Dto.*;
-import com.Megatram.Megatram.Entity.Client;
-import com.Megatram.Megatram.Entity.Commande;
-import com.Megatram.Megatram.Entity.LieuStock;
 import com.Megatram.Megatram.repository.CommandeRepository;
 import com.Megatram.Megatram.service.CommandeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/commandes")
 @Tag(name = "Gestion des Commandes", description = "API pour créer, lire, valider et modifier les commandes")
+@PreAuthorize("hasRole('ADMIN') ")
 public class CommandeController {
 
     @Autowired
@@ -36,7 +34,7 @@ public class CommandeController {
     private CommandeRepository commandeRepository;
 
     @Operation(summary = "Créer une nouvelle commande", description = "Crée une nouvelle commande avec un statut 'EN_ATTENTE'. Le lieu de livraison est déterminé automatiquement à partir des produits.")
-    @PreAuthorize("hasAuthority('COMMANDE_CREATE')")
+//    @PreAuthorize("hasAuthority('COMMANDE_CREATE')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Commande créée avec succès",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommandeResponseDTO.class))),
@@ -53,7 +51,7 @@ public class CommandeController {
 
     // ... Les autres endpoints (GET, POST valider, PUT) restent fonctionnellement les mêmes mais bénéficieront de la correction ...
 
-    @PreAuthorize("hasAuthority('COMMANDE_READ')")
+//    @PreAuthorize("hasAuthority('COMMANDE_READ')")
     @Operation(summary = "Récupérer toutes les commandes", description = "Retourne une liste de toutes les commandes existantes.")
     @GetMapping
     public ResponseEntity<List<CommandeResponseDTO>> recupererLesCommandes() {
@@ -61,7 +59,7 @@ public class CommandeController {
         return ResponseEntity.ok(commandes);
     }
 
-    @PreAuthorize("hasAuthority('COMMANDE_READ')")
+//    @PreAuthorize("hasAuthority('COMMANDE_READ')")
     @Operation(summary = "Récupérer une commande par son ID", description = "Retourne les détails d'une commande spécifique.")
     @GetMapping("/{id}")
     public ResponseEntity<CommandeResponseDTO> recupererCommandeParId(@PathVariable Long id) {
@@ -78,7 +76,7 @@ public class CommandeController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAuthority('COMMANDE_CANCEL')")
+//    @PreAuthorize("hasAuthority('COMMANDE_CANCEL')")
     @Operation(summary = "annuler une commande")
     @PutMapping("/{id}/annuler")
     public ResponseEntity<?> annulerCommande(@PathVariable Long id) {
@@ -112,7 +110,7 @@ public class CommandeController {
 
     @Operation(summary = "Récupérer les commandes par ID de client",
             description = "Retourne une liste de toutes les commandes passées par un client spécifique.")
-    @PreAuthorize("hasAuthority('COMMANDE_READ')")
+//    @PreAuthorize("hasAuthority('COMMANDE_READ')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Commandes trouvées et retournées avec succès"),
             @ApiResponse(responseCode = "404", description = "Aucune commande trouvée pour ce client (la liste sera vide)")
@@ -130,7 +128,7 @@ public class CommandeController {
 
 
     /*  METHODE DE RECHERCHE */
-    @PreAuthorize("hasAuthority('COMMANDE_READ')")
+//    @PreAuthorize("hasAuthority('COMMANDE_READ')")
     @Operation(summary = "RECHERCHE")
     @GetMapping("/search")
     public ResponseEntity<List<CommandeResponseDTO>> searchCommandes(@RequestParam String q) {

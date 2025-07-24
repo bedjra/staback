@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/lieustock")
 @Tag(name = "Lieux de Stock", description = "API pour la gestion des magasins et boutiques")
 @CrossOrigin(origins = "http://localhost:3000")
+@PreAuthorize("hasRole('ADMIN') ")
 public class LieuStockController {
 
     private final LieuStockService lieuStockService;

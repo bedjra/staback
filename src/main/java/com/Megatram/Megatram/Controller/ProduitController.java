@@ -27,9 +27,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/produits") // Convention REST: nom de la ressource au pluriel
+@RequestMapping("/api/produits")
+@PreAuthorize("hasRole('ADMIN') ")
 @Tag(name = "Produits", description = "API pour la gestion complète des produits")
-@CrossOrigin(origins = "http://localhost:3000") // Adaptez si votre frontend est sur un autre port
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProduitController {
 
     // Le contrôleur ne dépend QUE du service. Plus de dépendance au Repository ici.
@@ -42,8 +43,7 @@ public class ProduitController {
 
     @Operation(summary = "Crée un nouveau produit")
     @PostMapping
-//    @PreAuthorize("hasRole('ADMIN')")
-    @PreAuthorize("hasAuthority('PRODUIT_CREATE')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProduitDto> createProduit(@RequestBody ProduitRequestDTO requestDto) {
         // On envoie le DTO de requête (sécurisé) au service
         ProduitDto nouveauProduit = produitService.createProduit(requestDto);
@@ -53,8 +53,7 @@ public class ProduitController {
 
     @Operation(summary = "Met à jour un produit existant par son ID")
     @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
-    @PreAuthorize("hasAuthority('PRODUIT_UPDATE')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProduitDto> updateProduit(@PathVariable Long id, @RequestBody ProduitRequestDTO requestDto) {
         // Le service gère la logique de mise à jour
         ProduitDto produitMisAJour = produitService.updateProduit(id, requestDto);
@@ -66,7 +65,6 @@ public class ProduitController {
 
 
     @PutMapping("/assignation")
-    @PreAuthorize("hasAuthority('PRODUIT_UPDATE')")
     public ResponseEntity<String> assignerCategorieEtLieuStock(@RequestBody AssignationProduitsDTO dto) {
             try {
                 produitService.assignerCategorieEtEntrepot(dto);
@@ -81,7 +79,7 @@ public class ProduitController {
 
 
 
-    @PreAuthorize("hasAuthority('PRODUIT_READ')")
+
     @Operation(summary = "Récupère la liste de tous les produits")
     @GetMapping
     public ResponseEntity<List<ProduitDto>> getAllProduits() {
@@ -91,7 +89,6 @@ public class ProduitController {
 
     @Operation(summary = "Récupère un produit par son ID")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('PRODUIT_READ')")
     public ResponseEntity<ProduitDto> getProduitById(@PathVariable Long id) {
         try {
             ProduitDto produit = produitService.getProduitById(id);
@@ -103,7 +100,6 @@ public class ProduitController {
 
     @Operation(summary = "Recherche un produit par son code-barres")
     @GetMapping("/code/{codeBarre}")
-    @PreAuthorize("hasAuthority('PRODUIT_READ')")
     public ResponseEntity<?> getProduitByCodeBarre(@PathVariable String codeBarre) {
         try {
             // Cette méthode doit être ajoutée dans votre classe ProduitService
@@ -153,14 +149,8 @@ public class ProduitController {
 
 
 
-//    @Operation(summary = "Importe des produits depuis un fichier Excel (.xlsx)")
-//    @PostMapping(path = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<List<ProduitDto>> importProduitsFromExcel(@RequestParam("file") MultipartFile file) {
-//        List<ProduitDto> produits = produitService.importProduitsFromExcel(file);
-//        return ResponseEntity.ok(produits);
-//    }
-
-
+    @Operation(summary = "Importe des produits depuis un fichier Excel (.xlsx)")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(path = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> importProduitsFromExcel(@RequestParam("file") MultipartFile file) {
         try {

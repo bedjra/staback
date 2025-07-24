@@ -28,7 +28,7 @@ import java.util.Map;
 @RequestMapping("/api/categorie")
 @Tag(name = "Categorie", description = "Gestion des Categories")
 @CrossOrigin(origins = "http://localhost:3000")
-
+@PreAuthorize("hasRole('ADMIN') ")
 public class CategorieController {
 
     @Autowired

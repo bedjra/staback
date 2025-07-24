@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
+@PreAuthorize("hasRole('ADMIN') ")
 @Tag(name = "Utilisateurs", description = "Gestion et authentification des utilisateurs")
 @SecurityRequirement(name = "bearerAuth") // Indique que la plupart des endpoints nécessitent une authentification
 public class UtilisateurController {

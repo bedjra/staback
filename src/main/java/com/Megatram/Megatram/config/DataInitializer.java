@@ -48,10 +48,8 @@ public class DataInitializer implements CommandLineRunner {
 
         // --- 1. Création des Rôles (si nécessaire) ---
 
-                    //A-ADMIN
+//                    //A-ADMIN
         Role adminRole = createRoleIfNotFound("ADMIN", Arrays.asList(PermissionType.values()));
-
-
 
                  //B-SECRETAIRE
         Role secretaireRole = createRoleIfNotFound("SECRETARIAT", List.of(
@@ -60,7 +58,6 @@ public class DataInitializer implements CommandLineRunner {
                 PermissionType.PRODUIT_READ,
                 PermissionType.PRODUIT_UPDATE,
                 PermissionType.PRODUIT_DELETE,
-                PermissionType.PRODUIT_IMPORT,
 
                 // --- Commandes ---
                 PermissionType.COMMANDE_CREATE,
@@ -83,33 +80,20 @@ public class DataInitializer implements CommandLineRunner {
         Role magasinierRole = createRoleIfNotFound("MAGASINIER", List.of(/* ... */));
 
 
-              //D- BOUTIQUIER
-        Role boutiquierRole = createRoleIfNotFound("BOUTIQUIER", List.of(
-                // --- Gestion des Produits ---
-                PermissionType.PRODUIT_CREATE,
-                PermissionType.PRODUIT_READ,
-
-                // --- Gestion des Commandes ---
-                PermissionType.COMMANDE_CREATE,
-                PermissionType.COMMANDE_READ
-        ));
-
-            //E- CONTROLLEUR
-        Role controleurRole = createRoleIfNotFound("CONTROLEUR", Arrays.asList(PermissionType.values()));
-//                // --- Produits ---
+//              //D- BOUTIQUIER
+//        Role boutiquierRole = createRoleIfNotFound("BOUTIQUIER", List.of(
+//                // --- Gestion des Produits ---
 //                PermissionType.PRODUIT_CREATE,
 //                PermissionType.PRODUIT_READ,
-//                PermissionType.PRODUIT_UPDATE,
-//                PermissionType.PRODUIT_DELETE,
-//                PermissionType.PRODUIT_IMPORT,
 //
-//                // --- Inventaire & Réapprovisionnement ---
-//                PermissionType.INVENTAIRE_MANAGE,
-//                PermissionType.REAPPRO_MANAGE,
-//
-//                // --- Rapports ---
-//                PermissionType.REPORT_VIEW
+//                // --- Gestion des Commandes ---
+//                PermissionType.COMMANDE_CREATE,
+//                PermissionType.COMMANDE_READ
 //        ));
+
+//            //E- CONTROLLEUR
+        Role controleurRole = createRoleIfNotFound("CONTROLEUR",  Arrays.asList(PermissionType.values()));
+
 
         // --- 2. Création des Utilisateurs et Clients (si nécessaire) ---
         String defaultPassword = "123";

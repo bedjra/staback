@@ -13,12 +13,10 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.itextpdf.text.log.LoggerFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,10 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -319,7 +314,7 @@ public class ProduitService {
             Path fichier = barcodeStoragePath.resolve(barcodeText + ".png");
 
             // Générer le code-barres et sauvegarder
-            BitMatrix matrix = new MultiFormatWriter().encode(barcodeText, BarcodeFormat.CODE_128, 200, 150);
+            BitMatrix matrix = new MultiFormatWriter().encode(barcodeText, BarcodeFormat.CODE_128, 300, 100);
             MatrixToImageWriter.writeToPath(matrix, "PNG", fichier);
 
         } catch (Exception e) {

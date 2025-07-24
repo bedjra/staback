@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/clients") // Convention: nom de la ressource au pluriel
+@PreAuthorize("hasRole('ADMIN') ")
 @Tag(name = "Clients", description = "CRUD pour l'entité Client")
 @CrossOrigin(origins = "http://localhost:3000") // Ne pas oublier cette ligne si votre frontend est séparé
 public class ClientApi {
@@ -37,6 +38,7 @@ public class ClientApi {
     }
 
     @Operation(summary = "Récupère la liste des clients visibles par l'utilisateur connecté")
+    @PreAuthorize("hasAnyRole('ADMIN')") // Définir qui peut créer des clients
     @GetMapping
     public ResponseEntity<List<ClientDto>> getVisibleClients() {
         // C'est le seul endpoint GET pour lister les clients. Il appelle la bonne méthode du service.

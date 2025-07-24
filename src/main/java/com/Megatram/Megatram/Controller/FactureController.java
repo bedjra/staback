@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/factures")
 @Tag(name = "Factures", description = "API pour la génération et la gestion des factures")
 @CrossOrigin(origins = "http://localhost:3000") // Adaptez si nécessaire
+@PreAuthorize("hasRole('ADMIN') ")
 public class FactureController {
 
     private final FactureService factureService;

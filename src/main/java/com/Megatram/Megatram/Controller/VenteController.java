@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ventes")
+@PreAuthorize("hasRole('ADMIN') ")
 @Tag(name = "Ventes", description = "Gestion des opérations de vente")
 @CrossOrigin(origins = "http://localhost:3000")
 public class VenteController {

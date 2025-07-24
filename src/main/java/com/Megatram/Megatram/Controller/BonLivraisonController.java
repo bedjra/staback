@@ -1,7 +1,6 @@
 package com.Megatram.Megatram.Controller;
 
 import com.Megatram.Megatram.Dto.BonLivraisonResponseDTO;
-import com.Megatram.Megatram.Entity.LieuStock;
 import com.Megatram.Megatram.Entity.Utilisateur;
 import com.Megatram.Megatram.service.BonLivraisonService;
 import com.Megatram.Megatram.service.UtilisateurService;
@@ -10,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +19,10 @@ import java.security.Principal; // <-- N'oubliez pas cet import
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/livraisons")
+@PreAuthorize("hasRole('ADMIN') ")
 @Tag(name = "Bons de Livraison", description = "API pour la gestion des livraisons et sorties de stock")
 @CrossOrigin(origins = "http://localhost:3000")
 public class BonLivraisonController {
