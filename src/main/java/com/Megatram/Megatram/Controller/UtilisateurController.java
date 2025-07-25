@@ -98,8 +98,6 @@ public class UtilisateurController {
         return ResponseEntity.ok(utilisateurs);
     }
 
-    // Le reste de votre controller est déjà bien structuré...
-    // ... (login, register, me, getRoleByEmail, getAllRoles, etc.)
 
     @Operation(summary = "Connexion d'un utilisateur")
     @PostMapping("/login")
